@@ -11,13 +11,9 @@ test.describe('Swag Labs E2E Shopping Flow', () => {
   // Hook: Before each test, login as a standard user
   // 钩子函数：每次测试前，先执行标准的登录流程
   test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
     inventoryPage = new InventoryPage(page);
     
-    // Pre-condition: User must be logged in
-    // 前置条件：用户必须先登录
-    await loginPage.goto();
-    await loginPage.login('standard_user', 'secret_sauce');
+    await page.goto('https://www.saucedemo.com/inventory.html')
   });
 
   // Test Case: Add an item to the cart and verify the cart badge updates
