@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
+// import { LoginPage } from '../pages/LoginPage';
 import { InventoryPage } from '../pages/InventoryPage';
 
 // test.describe groups our E2E shopping flow tests
 // test.describe 将我们的端到端购物流程测试分组
 test.describe('Swag Labs E2E Shopping Flow', () => {
-  let loginPage: LoginPage;
+  // let loginPage: LoginPage;
   let inventoryPage: InventoryPage;
 
   // Hook: Before each test, login as a standard user

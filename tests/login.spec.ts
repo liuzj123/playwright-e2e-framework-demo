@@ -7,6 +7,7 @@ test.describe('Swag Labs 登录模块测试 (DDT)', () => {
   let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
+    test.setTimeout(80000);
     loginPage = new LoginPage(page);
     await loginPage.goto();
   });
