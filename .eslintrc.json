@@ -1,0 +1,11 @@
+{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:playwright/recommended"
+    ],
+    "rules": {
+      "playwright/expect-expect": "warn",
+      "playwright/no-skipped-test": "off"
+    }
+  }
