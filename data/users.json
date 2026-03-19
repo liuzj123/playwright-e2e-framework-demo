@@ -1,0 +1,23 @@
+[
+    {
+      "caseName": "正向用例-标准用户登录",
+      "username": "standard_user",
+      "password": "secret_sauce",
+      "expectedUrl": "inventory.html",
+      "isValid": true
+    },
+    {
+      "caseName": "逆向用例-被锁定的用户",
+      "username": "locked_out_user",
+      "password": "secret_sauce",
+      "errorMessage": "Sorry, this user has been locked out.",
+      "isValid": false
+    },
+    {
+      "caseName": "逆向用例-密码错误",
+      "username": "standard_user",
+      "password": "wrong_password",
+      "errorMessage": "Username and password do not match",
+      "isValid": false
+    }
+  ]
