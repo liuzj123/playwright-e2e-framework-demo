@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 🚀 Key: Split tests into 3 shards / 核心：将测试切分为 3 个分片
+        # 🚀 这里是关键：必须定义 shardIndex 数组
         shardIndex: [1, 2, 3]
         shardTotal: [3]
     steps:
@@ -28,10 +28,10 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Run Playwright tests
-      # 🚀 Run the specific shard / 运行指定的编号分片
+      # 🚀 这里引用 matrix 变量，千万检查两个花括号中间的空格
       run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-    - name: Upload Blob Report to GitHub Actions
+    - name: Upload Blob Report
       if: always()
       uses: actions/upload-artifact@v4
       with:
