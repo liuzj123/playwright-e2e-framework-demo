@@ -1,15 +1,18 @@
 import sqlite3 from 'sqlite3';
 import { promisify } from 'util';
 
+// 💡 定义订单行的接口结构
+interface OrderRow {
+  id: number;
+  status: string;
+}
+
 export class DbUtil {
-  // 模拟连接数据库并执行查询
   static async verifyOrderExists(orderId: number): Promise<boolean> {
-    // 实际项目中这里会用 process.env.DB_URL
     const db = new sqlite3.Database(':memory:'); 
     const get = promisify(db.get).bind(db);
 
     try {
-      // 模拟初始化数据（实际测试中你会查正式表）
       await new Promise((resolve) => {
         db.serialize(() => {
           db.run("CREATE TABLE orders (id INT, status TEXT)");
@@ -18,7 +21,9 @@ export class DbUtil {
         });
       });
 
-      const row: any = await get("SELECT * FROM orders WHERE id = ?", [orderId]);
+      // 💡 在这里指定类型为 OrderRow | undefined
+      const row = await get("SELECT * FROM orders WHERE id = ?", [orderId]) as OrderRow | undefined;
+      
       return !!row;
     } finally {
       db.close();
