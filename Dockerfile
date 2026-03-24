@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies / 安装依赖
-RUN npm i
+RUN npm ci
 
 # Copy the rest of the code / 复制剩余代码
 COPY . .
