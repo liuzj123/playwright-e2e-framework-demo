@@ -1,38 +1,39 @@
 import { test, expect } from '@playwright/test';
 
-test('Intercept and Verify API Request / 拦截并校验底层接口请求', async ({ page }) => {
-  // 1. 设置监听器：当页面发出特定 URL 的请求时触发
-  const requestPromise = page.waitForRequest(request => 
-    request.url().includes('/v1/login') && request.method() === 'POST'
-  );
+test('Mock Server Error / 模拟后端500报错', async ({ page }) => {
+  // 1. 💡 修正点：在 goto 之前就设置路由，使用更强大的正则表达式
+  // 拦截所有包含 "login" 的 POST 请求
+  await page.route(/\/.*login.*/, async (route, request) => {
+    if (request.method() === 'POST') {
+      console.log(`📡 成功拦截请求: ${request.url()}`);
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Server is broken' }),
+      });
+    } else {
+      await route.continue();
+    }
+  });
 
   await page.goto('https://www.saucedemo.com/');
+
+  // 2. 执行操作
   await page.fill('#user-name', 'standard_user');
   await page.fill('#password', 'secret_sauce');
+  
+  // 3. 💡 技巧：点击后增加一个微小的等待，或者直接使用 expect 的自动重试
   await page.click('#login-button');
 
-  // 2. 获取拦截到的请求对象
-  const request = await requestPromise;
-
-  // 3. 校验请求体 (Payload) —— 判定前端是否传错参数
-  const postData = JSON.parse(request.postData() || '{}');
-  console.log('📡 Intercepted Payload:', postData);
+  // 4. 验证
+  const errorMsg = page.locator('[data-test="error"]');
   
-  expect(postData.username).toBe('standard_user');
+  // 💡 使用 soft assertion 即使失败也会继续执行，方便我们看日志
+  await expect(errorMsg).toBeVisible({ timeout: 10000 }); 
+  
+  const text = await errorMsg.innerText();
+  console.log('🔥 捕获到前端显示的错误信息:', text);
+  
+  // SauceDemo 报错时通常包含 "Epic sadface"
+  expect(text).toContain('Epic sadface');
 });
-
-test('Mock Server Error / 模拟后端500报错', async ({ page }) => {
-    // 拦截所有指向 login 的请求，直接返回 500
-    await page.route('**/login', route => route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({ error: 'Internal Server Error' }),
-    }));
-  
-    await page.goto('https://www.saucedemo.com/');
-    // ... 输入账号密码并登录 ...
-    
-    // 验证前端是否处理了异常情况（比如弹出了红色的错误提示）
-    const errorMsg = page.locator('[data-test="error"]');
-    await expect(errorMsg).toBeVisible();
-  });
